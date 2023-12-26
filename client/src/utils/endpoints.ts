@@ -1,6 +1,6 @@
 export const ENDPOINTS = {
     LOGIN:"/login",
-    REGISTER:"/register",
+    SIGNUP:"/signup",
     LOGOUT:"/logout",
     CREATE_EVENT:"/create-event",
     GET_EVENTS:"/get-events",

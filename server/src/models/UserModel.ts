@@ -1,9 +1,10 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
-interface UserType {
+import mongoose, { Document, Schema } from "mongoose";
+interface UserType extends Document {
   name: string;
   email: string;
   password: string;
   salt: string;
+  events: Array<any>;
 }
 const userSchema = new Schema(
   {
@@ -24,6 +25,12 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    events: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Event",
+      },
+    ],
   },
   {
     timestamps: true,

@@ -10,8 +10,8 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use("/auth", AuthRoute);
-app.use("/user", UserRoute);
+app.use("/api/auth", AuthRoute);
+app.use("/api/user", UserRoute);
 app.listen(PORT, () => {
   console.clear();
   console.log(`listening on port:${PORT}`);
