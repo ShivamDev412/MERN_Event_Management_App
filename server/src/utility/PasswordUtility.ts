@@ -24,9 +24,8 @@ export const validateSignature = async (req: Request) => {
   const token = req.cookies["auth-token"];
 
   if (token) {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
-      _id: string;
-    };
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    // @ts-ignore
     req.user = payload;
     return true;
   }

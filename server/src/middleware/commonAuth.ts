@@ -4,9 +4,7 @@ import { validateSignature } from "../utility/PasswordUtility";
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        _id: string;
-      };
+      user?:any;
     }
   }
 }
