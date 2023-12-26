@@ -20,10 +20,10 @@ const Signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const isUserExist = yield UserModel_1.default.findOne({ email });
         if (isUserExist) {
-            res.json({ success: false, message: "User already exist" });
+            return res.json({ success: false, message: "User already exists" });
         }
         else if (password !== confirmPassword) {
-            res.json({
+            return res.json({
                 success: false,
                 message: "Password and confirm password do not match",
             });
@@ -38,44 +38,48 @@ const Signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 salt,
             });
             yield newUser.save();
-            res.json({ success: true, message: "User created successfully" });
+            return res.json({ success: true, message: "User created successfully" });
         }
     }
     catch (error) {
-        console.log(error);
         next(error);
     }
 });
 exports.Signup = Signup;
 const Login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const isUserExist = yield UserModel_1.default.findOne({ email });
-    if (isUserExist !== null) {
-        const validation = yield (0, PasswordUtility_1.ValidatePassword)(password, isUserExist.password, isUserExist.salt);
-        if (validation) {
-            const signature = yield (0, PasswordUtility_1.generateSignature)({ _id: isUserExist._id });
-            const oneMonthInMillis = 30 * 24 * 60 * 60 * 1000;
-            res.cookie("auth-token", signature, {
-                maxAge: oneMonthInMillis,
-                httpOnly: true,
-            });
-            return res.json({
-                success: true,
-                message: "Logged in successfully",
-                data: isUserExist,
-            });
+    try {
+        const isUserExist = yield UserModel_1.default.findOne({ email });
+        if (isUserExist) {
+            const validation = yield (0, PasswordUtility_1.ValidatePassword)(password, isUserExist.password, isUserExist.salt);
+            if (validation) {
+                const signature = yield (0, PasswordUtility_1.generateSignature)({ _id: isUserExist._id });
+                const oneMonthInMillis = 30 * 24 * 60 * 60 * 1000;
+                res.cookie("auth-token", signature, {
+                    maxAge: oneMonthInMillis,
+                    httpOnly: true,
+                });
+                return res.json({
+                    success: true,
+                    message: "Logged in successfully",
+                    data: isUserExist,
+                });
+            }
+            else {
+                return res
+                    .status(400)
+                    .json({ success: false, message: "Password did not match" });
+            }
         }
         else {
-            res
-                .status(400)
-                .json({ success: false, message: "Password did not match" });
+            return res.json({
+                success: false,
+                message: "User with that email does not exist",
+            });
         }
     }
-    else {
-        return res.json({
-            success: false,
-            message: "Vendor with that email does not exist",
-        });
+    catch (error) {
+        next(error);
     }
 });
 exports.Login = Login;
