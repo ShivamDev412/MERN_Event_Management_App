@@ -2,6 +2,7 @@ import LoginImage from "@/assets/login_image.jpg";
 import TextInput from "@/components/Input";
 import { useLogin } from "./controller";
 import ButtonComponent from "@/components/Button";
+import OrDivider from "@/components/ui/orDivider";
 
 function Login() {
   const { login, error, handleInputChange, handleSubmit } = useLogin();
@@ -30,11 +31,7 @@ function Login() {
           />
           <ButtonComponent value="Login" type="submit" />
         </form>
-        <div className="flex items-center gap-4 my-4 justify-center">
-          <div className="border w-[40%] border-zinc-300"></div>
-          <p>OR</p>
-          <div className="border w-[40%] border-zinc-300"></div>
-        </div>
+        {/* <OrDivider /> */}
       </div>
       <div className="hidden md:block w-1/2 h-full">
         <img
