@@ -1,14 +1,17 @@
-import LoginImage from "@/assets/login_image.jpg";
 import TextInput from "@/components/Input";
 import { useSignup } from "./controller";
 import ButtonComponent from "@/components/Button";
 import OrDivider from "@/components/ui/orDivider";
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "@/utils/endpoints";
+import AuthWrapper from "@/wrappers/AuthWrapper";
 
 function Signup() {
-  const { signup, error, handleInputChange, handleSubmit } = useSignup();
+  const { signup, error, handleInputChange, handleSubmit, loading } =
+    useSignup();
   return (
-    <section className="flex items-center justify-between h-screen p-4">
-      <div className="w-full md:w-1/2 p-[2.5in]">
+    <AuthWrapper>
+      <div className="w-full lg:w-1/2 lg:p-[0.5in] xl:p-[2.5in] md:w-1/2 justify-between mx-auto">
         <h1 className="text-center text-[3rem] my-4">Create Account</h1>
         <form onSubmit={handleSubmit}>
           <TextInput
@@ -19,6 +22,7 @@ function Signup() {
             placeholder={"Name"}
             onChange={handleInputChange}
             error={error.name}
+            disabled={loading}
           />
           <TextInput
             id={"email"}
@@ -28,6 +32,7 @@ function Signup() {
             placeholder={"Email"}
             onChange={handleInputChange}
             error={error.email}
+            disabled={loading}
           />
           <TextInput
             id={"password"}
@@ -37,6 +42,7 @@ function Signup() {
             placeholder={"Password"}
             onChange={handleInputChange}
             error={error.password}
+            disabled={loading}
           />
           <TextInput
             id={"confirmPassword"}
@@ -46,20 +52,21 @@ function Signup() {
             placeholder={"Confirm Password"}
             onChange={handleInputChange}
             error={error.confirmPassword}
+            disabled={loading}
           />
-          <ButtonComponent value="Signup" type="submit" />
+          <ButtonComponent value="Signup" type="submit" loading={loading} />
         </form>
-        {/* <OrDivider /> */}
-        
+        <div className="mt-2">
+          <p className="text-zinc-900">
+            Already have an account?{" "}
+            <Link to={ENDPOINTS.LOGIN} className="hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
+        <OrDivider />
       </div>
-      <div className="hidden md:block w-1/2 h-full">
-        <img
-          src={LoginImage}
-          alt="login_image"
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </div>
-    </section>
+    </AuthWrapper>
   );
 }
 

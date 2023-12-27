@@ -1,9 +1,16 @@
+import { useNavigate } from "react-router-dom";
+import { PostApiCall } from "@/utils/api";
 import { signupInitialState } from "@/utils/constant";
+import { API_ENDPOINTS, API_TYPE, ENDPOINTS } from "@/utils/endpoints";
 import { useState } from "react";
+import Toast from "@/utils/toastMessage";
+
 
 export const useSignup = () => {
+  const navigation = useNavigate();
   const [signup, setSignup] = useState(signupInitialState);
   const [error, setError] = useState(signupInitialState);
+  const [loading, setLoading] = useState(false);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
   };
@@ -35,10 +42,33 @@ export const useSignup = () => {
     setError(errors);
     return isValid;
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
-    return;
+    try {
+      setLoading(true);
+      const res = await PostApiCall(`${API_TYPE.AUTH}${API_ENDPOINTS.SIGNUP}`, {
+        name: signup.name,
+        email: signup.email,
+        password: signup.password,
+        confirmPassword: signup.confirmPassword,
+      });
+      if (res.success) {
+        Toast(res.message, "success")
+        navigation(ENDPOINTS.LOGIN);
+        setSignup(signupInitialState);
+       
+      } else {
+        Toast(res.message, "error")
+        setLoading(false);
+      }
+      
+    } catch (error: any) {
+      Toast(error.message, "success")
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
-  return { signup, error, handleInputChange, handleSubmit };
+  return { signup, error, handleInputChange, handleSubmit, loading };
 };

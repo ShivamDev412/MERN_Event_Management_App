@@ -14,14 +14,16 @@ export const Signup = async (
   next: NextFunction
 ) => {
   const { email, password, name, confirmPassword } = req.body as SignupType;
-
+  console.log(req.body);
   try {
     const isUserExist = await UserModel.findOne({ email });
 
     if (isUserExist) {
-      return res.json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     } else if (password !== confirmPassword) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Password and confirm password do not match",
       });
@@ -38,6 +40,7 @@ export const Signup = async (
       return res.json({ success: true, message: "User created successfully" });
     }
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };
@@ -61,30 +64,25 @@ export const Login = async (
 
       if (validation) {
         const signature = await generateSignature({ _id: isUserExist._id });
-        const oneMonthInMillis = 30 * 24 * 60 * 60 * 1000;
-
-        res.cookie("auth-token", signature, {
-          maxAge: oneMonthInMillis,
-          httpOnly: true,
-        });
 
         return res.json({
           success: true,
           message: "Logged in successfully",
           data: isUserExist,
+          token: signature,
         });
       } else {
         return res
           .status(400)
-          .json({ success: false, message: "Password did not match" });
+          .json({ success: false, message: "Invalid email or password" });
       }
     } else {
-      return res.json({
-        success: false,
-        message: "User with that email does not exist",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
   } catch (error) {
+    console.error(error); // Log the error for debugging
     next(error);
   }
 };

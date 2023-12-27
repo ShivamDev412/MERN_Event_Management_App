@@ -1,14 +1,16 @@
-import LoginImage from "@/assets/login_image.jpg";
 import TextInput from "@/components/Input";
 import { useLogin } from "./controller";
 import ButtonComponent from "@/components/Button";
 import OrDivider from "@/components/ui/orDivider";
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "@/utils/endpoints";
+import AuthWrapper from "@/wrappers/AuthWrapper";
 
 function Login() {
-  const { login, error, handleInputChange, handleSubmit } = useLogin();
+  const { login, error, handleInputChange, handleSubmit, loading } = useLogin();
   return (
-    <section className="flex items-center justify-between h-screen p-4">
-      <div className="w-full md:w-1/2 p-[2.5in]">
+    <AuthWrapper>
+      <div className="w-full lg:w-1/2 lg:p-[0.5in] xl:p-[2.5in] md:w-1/2 justify-between mx-auto">
         <h1 className="text-center text-[3rem] my-4">Login</h1>
         <form onSubmit={handleSubmit}>
           <TextInput
@@ -19,6 +21,7 @@ function Login() {
             placeholder={"Email"}
             onChange={handleInputChange}
             error={error.email}
+            disabled={loading}
           />
           <TextInput
             id={"password"}
@@ -28,19 +31,22 @@ function Login() {
             placeholder={"Password"}
             onChange={handleInputChange}
             error={error.password}
+            disabled={loading}
           />
-          <ButtonComponent value="Login" type="submit" />
+          <ButtonComponent value="Login" type="submit" loading={loading} />
         </form>
-        {/* <OrDivider /> */}
+        <div className="mt-2 flex justify-between">
+          <p className="text-zinc-900">
+            Don't have an account?{" "}
+            <Link to={ENDPOINTS.SIGNUP} className="hover:underline">
+              Signup
+            </Link>
+          </p>
+          <Link to={"/"}>Forgot password</Link>
+        </div>
+        <OrDivider />
       </div>
-      <div className="hidden md:block w-1/2 h-full">
-        <img
-          src={LoginImage}
-          alt="login_image"
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </div>
-    </section>
+    </AuthWrapper>
   );
 }
 

@@ -12,6 +12,7 @@ const TextInput: FC<InputType> = ({
   type,
   placeholder,
   error,
+  disabled = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
@@ -44,7 +45,11 @@ const TextInput: FC<InputType> = ({
           ref={inputRef}
           className={`flex h-10 w-full rounded-md border items-center ${
             isFocused ? "border-blue-500 border-2" : "border-input"
-          } bg-background px-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50`}
+          } bg-background px-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none ${
+            disabled
+              ? "disabled:cursor-not-allowed disabled:opacity-60 pointer-events-none"
+              : ""
+          }`}
           onClick={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         >
@@ -56,7 +61,9 @@ const TextInput: FC<InputType> = ({
             onChange={onChange}
             type={showPassword ? "text" : "password"}
             placeholder={placeholder}
+            disabled={disabled}
             maxLength={20}
+            autoComplete={"true"}
           />
           {showPassword ? (
             <IoEye className="h-5 w-5" onClick={togglePasswordVisibility} />
@@ -72,6 +79,8 @@ const TextInput: FC<InputType> = ({
           onChange={onChange}
           type={showPassword ? "text" : type}
           placeholder={placeholder}
+          disabled={disabled}
+          autoComplete="true"
         />
       )}
       {error !== "" && <p className="text-red-600 italic">{error}</p>}
