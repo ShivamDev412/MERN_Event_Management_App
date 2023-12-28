@@ -16,7 +16,10 @@ export const ValidatePassword = async (
 ) => {
   return (await GeneratePassword(password, salt)) === savedPassword;
 };
-export const generateSignature = async (payload: any) => {
+export const generateSignature = async (payload: {
+  _id: string;
+  email: string;
+}) => {
   return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "30d" });
 };
 

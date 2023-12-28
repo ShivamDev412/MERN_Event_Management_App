@@ -2,7 +2,9 @@ export interface LoginType {
     email:string;
     password:string;
 }
-export interface SignupType extends LoginType {
+export interface SignupType {
+    email:string;
+    password:string;
     name:string;
     confirmPassword:string;
 }

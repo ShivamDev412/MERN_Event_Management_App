@@ -4,7 +4,8 @@ import { signupInitialState } from "@/utils/constant";
 import { API_ENDPOINTS, API_TYPE, ENDPOINTS } from "@/utils/endpoints";
 import { useState } from "react";
 import Toast from "@/utils/toastMessage";
-
+import Cookies from "js-cookie";
+import { signupValidation } from "@/utils/validation";
 
 export const useSignup = () => {
   const navigation = useNavigate();
@@ -14,37 +15,12 @@ export const useSignup = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
   };
-  const validateForm = () => {
-    let isValid = true;
-    const errors = { ...signupInitialState };
-    if (!signup.name) {
-      errors.name = "Name is required";
-      isValid = false;
-    } else if (!/^[a-zA-Z-' ]+$/.test(signup.name)) {
-      errors.name = "Name should only contain alphanumeric characters";
-      isValid = false;
-    }
-    if (!signup.email) {
-      errors.email = "Email is required";
-      isValid = false;
-    }
-    if (!signup.password) {
-      errors.password = "Password is required";
-      isValid = false;
-    }
-    if (!signup.confirmPassword) {
-      errors.confirmPassword = "Confirm Password is required";
-      isValid = false;
-    } else if (signup.password !== signup.confirmPassword) {
-      errors.confirmPassword = "Password and confirm password do not match";
-      isValid = false;
-    }
-    setError(errors);
-    return isValid;
-  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    const { isValid, errors } = signupValidation(signup, signupInitialState);
+    setError(errors);
+    if (!isValid) return;
     try {
       setLoading(true);
       const res = await PostApiCall(`${API_TYPE.AUTH}${API_ENDPOINTS.SIGNUP}`, {
@@ -54,17 +30,20 @@ export const useSignup = () => {
         confirmPassword: signup.confirmPassword,
       });
       if (res.success) {
-        Toast(res.message, "success")
-        navigation(ENDPOINTS.LOGIN);
+        Toast(res.message, "success");
+        Cookies.set("auth-token", res.token, { expires: 7 });
+        navigation(ENDPOINTS.HOME);
         setSignup(signupInitialState);
-       
       } else {
-        Toast(res.message, "error")
+        if (res.message === "Validation error") {
+          setError(res.errors);
+          return;
+        }
+        Toast(res.message, "error");
         setLoading(false);
       }
-      
     } catch (error: any) {
-      Toast(error.message, "success")
+      Toast(error.message, "success");
       setLoading(false);
     } finally {
       setLoading(false);

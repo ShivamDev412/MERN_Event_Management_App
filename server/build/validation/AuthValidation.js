@@ -23,42 +23,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    salt: {
-        type: String,
-        required: true,
-    },
-    events: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: "Event",
-        },
-    ],
-}, {
-    timestamps: true,
-    toJSON: {
-        transform(doc, ret, options) {
-            delete ret.password;
-            delete ret.salt;
-            delete ret.__v;
-            delete ret.createdAt;
-            delete ret.updatedAt;
-        },
-    },
+exports.loginSchema = exports.signupInputSchema = void 0;
+const z = __importStar(require("zod"));
+exports.signupInputSchema = z.object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+        .string()
+        .refine((password) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,20}$/.test(password), {
+        message: "Password must be between 6 and 20 characters and include at least one uppercase letter, one lowercase letter, and one special character",
+    }),
+    name: z
+        .string()
+        .max(30)
+        .refine((name) => /^[a-zA-Z\s]+$/.test(name), {
+        message: "Name can only contain letters and spaces",
+    }),
+    confirmPassword: z.string(),
 });
-const UserModel = mongoose_1.default.model("User", userSchema);
-exports.default = UserModel;
+exports.loginSchema = z.object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z.string(),
+});

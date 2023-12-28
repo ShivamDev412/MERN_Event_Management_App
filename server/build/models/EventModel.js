@@ -24,41 +24,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    salt: {
-        type: String,
-        required: true,
-    },
-    events: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: "Event",
-        },
-    ],
+const eventTypeSchema = new mongoose_1.Schema({
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    date: { type: Date, required: true },
+    time: { type: String, required: true },
+    location: { type: String, required: true },
+    image: { type: String, required: true, default: [] },
+    organizer: { type: String, required: true },
+    attendees: { type: [String], required: true, default: [] },
 }, {
     timestamps: true,
     toJSON: {
         transform(doc, ret, options) {
-            delete ret.password;
-            delete ret.salt;
             delete ret.__v;
             delete ret.createdAt;
-            delete ret.updatedAt;
         },
     },
 });
-const UserModel = mongoose_1.default.model("User", userSchema);
-exports.default = UserModel;
+const EventModel = mongoose_1.default.model("Event", eventTypeSchema);
+exports.default = EventModel;
